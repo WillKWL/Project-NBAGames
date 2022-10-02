@@ -21,8 +21,9 @@
 
 - Business question
   - By reframing the business question to predicting the outcome of a game instead of NBA champion, we now have more data to use
-  - There are roughly 100 playoff games per season
-  - 1 row for Win and 1 row for Loss will give us a total of 5000 rows to work with 
+  - We now have 5000 rows to work with
+    - There are roughly 100 playoff games per season
+    - 1 row for Win and 1 row for Loss for each game, thus bypassing the need to deal with class imbalance
   - If we can accurately predict the outcome of a game, we can use the result to predict the NBA champion / final 4 teams / final 8 teams etc.
   - Timeline of an NBA season
     - <img src="../master/data/image/2022-09-11-14-37-33.png">

@@ -1,116 +1,113 @@
-Stream A = using team stats only
-
-Stream B = using player and team stats together
-
 # Step 1: Load data 
 
 Notebooks:
-- 1A_load_data.ipynb
-- 1B_load_data_player+team.ipynb
+- 1_playoff_games_load_data.ipynb
 
-1. Grab player and team stats using [Github NBA API](https://github.com/swar/nba_api) from NBA.com/stats <img src="../data/image/2022-09-18-16-35-09.png">
+1. Grab player and team stats using [Github NBA API](https://github.com/swar/nba_api) from NBA.com/stats <img src="../data/image/2022-10-02-18-13-07.png">
 
 2. Remove outlier seasons with games played (GP) <= 30 games or >= 60 games as we want the cutoff at around mid-season <img src="../data/image/2022-09-18-16-36-40.png">
 
 3. Fix the datatypes to numeric / category / string such that we can drop them in sklearn pipeline
 
-4. Split dataset into train and test set before any more EDA to prevent data leakage
+4. Split dataset into train and test set by unique GAME_ID before any more EDA to prevent data leakage
 
 # Step 2: ML workflow on train set
-2 options to tackle class-imbalance:
-- balance class weights
-  - 2A_ML_workflow_class_balanced_average precision.ipynb
-  - 2B_ML_workflow_class_balanced_average precision_player plus team.ipynb
-- ADASYN for synthetic samples
-  - 2A_ML_workflow_ADASYN_average precision.ipynb
-  - 2B_ML_workflow_ADASYN_average precision_player plus team.ipynb
 
 1. Exploratory data analysis 
-   - class imbalance: 3% positive only <img src="../data/image/2022-09-18-16-46-15.png">
-   - correlation matrix <img src="../data/image/2022-09-18-16-46-42.png">
+   - No class imbalance: 1 row for win and 1 row for loss per playoff game
 2. Data preparation pipeline
-- <img src="../data/image/2022-09-18-16-48-00.png">
-  
-  - omit ADASYN and RandomUnderSampler if balancing class weight instead
+- <img src="../data/image/2022-10-02-18-12-14.png">
 - feature scaling = MinMaxScaler
 - feature engineering = SeasonSimilarity
   - kmeans clustering to represent different NBA eras
-  - silhouette score for optimal # of clusters <img src="../data/image/2022-09-18-16-51-26.png">
+  - silhouette score for optimal # of clusters <img src="../data/image/2022-10-02-18-13-59.png">
 - feature selection = L1 penalty with logisitc regression
   - to reduce training time
-  - C = hyperparameter to tune
-  - <img src="../data/image/2022-09-18-16-52-42.png">
-3. Shortlist promising models
+  - threshold = hyperparameter to tune
+  - <img src="../data/image/2022-10-02-18-18-35.png">
+1. Shortlist promising models
    - Quickly check performance of various models using 10-fold cross validation
-   - <img src="../data/image/2022-09-18-16-53-52.png">
-4. Hyperparameter tuning with RandomizedSearchCV
+   - <img src="../data/image/2022-10-02-18-19-33.png">
+2. Hyperparameter tuning with RandomizedSearchCV
    - Tune top 5 models
    - Specify distribution of each hyperparameter (discrete uniform / continuous uniform / loguniform) <img src="../data/image/2022-09-18-16-57-50.png">
-   - Use 10-fold cross validation and 100 iterations to search for best hyperparameters optimizing for Average Precision <img src="../data/image/2022-09-18-16-58-45.png">
-5. Comparing performance on train set
-   - Average precision <img src="../data/image/2022-09-18-16-59-21.png">
-   - AUROC (too optimistic) <img src="../data/image/2022-09-18-16-59-40.png">
-   - Precision-Recall curve <img src="../data/image/2022-09-18-17-00-06.png">
+   - Use 10-fold cross validation and 100 iterations to search for best hyperparameters optimizing for Average Precision <img src="../data/image/2022-10-02-18-20-35.png">
+3. Comparing performance on train set
+   - Average precision <img src="../data/image/2022-10-02-18-21-12.png">
+   - AUROC (similar) <img src="../data/image/2022-10-02-18-21-28.png">
+   - Precision-Recall curve <img src="../data/image/2022-10-02-18-21-41.png">
 
-# Step 3: Evaluation on test set (team stats only)
-Best model = SGD(log loss) with balanced class weight
+# Step 3: Evaluation on test set
+Best model = SGD(log loss) with elastic net regularization 
+<img src="../data/image/2022-10-02-18-26-18.png">
 ## Predicted Probabilities
-The model was able to generalize better with a less obvious right skew in predicted probabilities due to class-imbalance
-<img src="../data/image/2022-09-18-22-54-09.png">
+The model was able to generalize across a range of predicted probabilities
+<img src="../data/image/2022-10-02-18-27-05.png">
 
 ## Precision-Recall Curve
-PR curve is still bumpy because of the small test set with 100+ rows only
-<img src="../data/image/2022-09-18-22-55-46.png">
-<img src="../data/image/2022-09-18-22-56-35.png">
+PR curve is much smoother now because of the larger train and test set with each row representing a playoff game instead of a team
+<img src="../data/image/2022-10-02-18-28-25.png">
+<img src="../data/image/2022-10-02-18-28-38.png">
 ## Average Precision (Area under PR Curve)
-AP is worse on test set vs 10-fold CV on train set but still within 1 SD of the CV results
-<img src="../data/image/2022-09-18-22-56-20.png">
+AP is better on test set vs 10-fold CV on train set but still within 1 SD of the CV results
+<img src="../data/image/2022-10-02-18-29-58.png">
+
+## ROC Curve
+Performance in AUROC is similar to AP
+<img src="../data/image/2022-10-02-18-41-24.png">
+
 ## Lift and gain chart
-Lift is good in 1st decile and by focusing on 1st decile, we can capture 60% of the champions
-<img src="../data/image/2022-09-18-22-57-30.png">
+Lift is the best in 1st decile and by focusing on first 4 deciles, we can capture 56% of the champions
+<img src="../data/image/2022-10-02-18-30-21.png">
 ## Coefficients or Feature importance
-<img src="../data/image/2022-09-18-22-58-28.png">
 
-- Before any manipulation, the data set contains 96 features
-- After feature selection and other data cleaning procedures, there are 20 features remaining
-- Finally, after fitting logistic regression with regularization, we can see that
+### Common features picked up by top models
+- Instead of just looking at our best model, we can look at the top 5 models and see what features are common across them
+- HOME: home court advantage
+- BLKA: blocks attempted
+- FG_PCT: field goal percentage
+- PF: personal fouls committed
+- OPP_AST: opponent assists
+- OPP_FG_PCT: opponent field goal percentage
+<img src="../data/image/2022-10-02-18-32-13.png">
+
+### Coefficients of best model
+- To interpret with caution (signs could change with different hyperparameters)
+<img src="../data/image/2022-10-02-18-34-38.png">
+
+- Before any manipulation, the data set contains 194 features
+- After feature selection and other data cleaning procedures, there are 38 features remaining
+- Finally, after fitting the best model with regularization, we can see that
   - significant variables: 
-    - FG_PCT before PTS
-      - teams should focus on getting high % shots before chasing for high scoring 
-    - AST_TO
-      - be careful with the ball and don't turn it over, which can lead to points loss in fast breaks
-    - most of the coefficients are related to OPP
-      - defense matters to win a championship
-      - controlling opponent's FG%, points, assists and blocks
+    - HOME
+      - home court advantage helps teams win in playoffs
+    - Transferrable skills from regular season to playoffs
+      - OPP_FG3_PCT: you have a higher chance to win this playoff game when you can defend 3-pointers well in the regular season
+      - 3 out of top 5 features are related to what your opponent is doing
+        - OPP_FG3_PCT_OPP: you have a higher chance to win this playoff game when your opponent does a poor job defending 3-pointers in the regular season
+        - PTS_OPP: you have a lower chance to win this playoff game when your opponent scores a lot in the regular season
+        - OFF_RATING_OPP: you have a lower chance to win this playoff game when your opponent has a high offensive rating in the regular season
 
-## Teams with greatest regret of not winning a championship
-- By sorting teams by predicted probability of winning a championship, we can see which team might had a high chance but didn't win it at last 
-- <img src="../data/image/2022-09-18-23-06-04.png">
+## How well does the prediction of playoff game outcome translate to predicting the ranking in playoffs (e.g. winning the champion)?
+- Overall the prediction of playoff ranking is full of noise
+- Precision never reaches above 80% when we try to predict the champion <img src="../data/image/2022-10-02-18-43-54.png">
+- Precision still never reaches above 80% when we try to predict the top 4 teams <img src="../data/image/2022-10-02-18-44-31.png">
+- Precision finally reaches above 80% when we try to predict the top 8 teams <img src="../data/image/2022-10-02-18-44-56.png">
+- Threshold of predicting playoff game outcome
+  - Counter-intuitive
+  - When threshold is lower, we can achieve a higher precision because we make more predictions of teams winning a game. Therefore there is more variability in the predicted ranking
+  - When threshold is higher, we only predict a few games to be a sure win. Therefore we cannot differentiate between teams, leading to a lower precision in predicting the ranking
+
+## Teams with greatest regret of not winning the playoff game
+- By sorting teams by predicted probability of winning a playoff game, we can tell which playoff game should have been won 
+- <img src="../data/image/2022-10-02-18-48-35.png">
 - Honorable mentions include 
-  - San Antonio Spurs (2015-16)
-    - 2nd in western conference but lost to warriors
-    - Tim Duncan retired after the season
-  - Golden State Warriors (2015-16)
-    - historical 73-9 record in regular season
-    - losing to Cavs after leading 3-1 in finals
-  - Miami Heat (2004-05)
-    - Traded for Shaq from Lakers and achieved franchise's best record since 1996-97 with 53 wins
-    - Lost to defending champion Detroit Pistons
+  - 2015-16 Warriors vs Cavaliers
+  - 72-win season for Warriors
+  - Game 5 when Warriors were up 3-1
+  - Game 7 when Warriors were at home and the series is tied 3-3
 
 
-# Limitation with a small test set (100+ rows only)  
-  - Extremely bumpy precision curve
-  - Right-skewed distribution in predicted probabilities
-  - Difficult to set decision thresold
-    - Given a small test set, you can set a threshold just below the highest predicted probability to reach 100% precision
-    - But going forward, can this threshold result in a consistently high precision?
-  - Would this change if I have a larger test set to try on? or is the inherent class imbalance in the data that makes it hard to have a high precision?
-
-# Extra: evaluate on test set with team + player stats 
-Best model = Gradient Boosting Classifier + ADASYN for over-sampling + Random under-sampling 
-
-> **Adding player stats to predict whether a team could win didn't help**
-
-- While it looked better on train set, evaluation on test set told the opposite
-- Precision and recall actually looked worse <img src="../data/image/2022-09-18-23-03-14.png">
-- Average precision is much worse than CV results on train set <img src="../data/image/2022-09-18-23-03-49.png">
+# Limitation with modifying the business problem
+  - Good AP and AUROC score in train and test set do not translate to good precision in predicting the ranking in playoffs
+  - The model is not optimized for predicting the ranking in playoffs
