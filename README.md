@@ -1,17 +1,34 @@
-# Binary classification - Can you predict NBA champion 4 months in advance?
-- Achieved 60% gain in 1st decile after identifing 19 out of 96 features to predict probability of winning a championship
-- Handled heavily imbalance dataset with only 3% positive by balancing class weights or creating synthetic samples
+# Binary classification - Can you predict the outcome of an NBA playoff game 4 months in advance?
+- Achieved 56% gain in first 4 deciles after identifying 38 out of 194 features to predict probability of winning an NBA playoff game
 - Designed a reusable ML pipeline to prepare dataset, finetune model on train set and evaluate performance on test set
  
+# Problem in answering the original question: 
+- Can you tell which team will win the championship before All-Star Game starts?
 
-# Business and analytical problem: can you tell which team will win the championship before All-Star Game starts?
+- **Dataset is too small to predict the outcome**
+- There are only 30 NBA teams with historical data starting from 1996-97 season
+- That is roughly 500 rows for train set and 200 rows for test set
+- You see all kinds of performance issue with this small dataset
+  - Bumpy precision-recall curve
+  - Overly optimistic AUROC
+  - Extremely high variance in model performance
+  - <img src="../master/data/image/2022-09-18-16-09-05.png">
+  - Even relaxing the target variable from predicting champion to predicting top 4 in playoffs didn't help
+    - <img src="../master/data/image/2022-09-28-17-24-03.png">
+
+
+# Modified business and analytical problem: can you tell which team will win an NBA playoff game before All-Star Game starts?
+
 - Business question
-  - How confidently can we tell which team will win the championship 4 months in advance (around when All-Star Game is held)?
+  - By reframing the business question to predicting the outcome of a game instead of NBA champion, we now have more data to use
+  - There are roughly 100 playoff games per season
+  - 1 row for Win and 1 row for Loss will give us a total of 5000 rows to work with 
+  - If we can accurately predict the outcome of a game, we can use the result to predict the NBA champion / final 4 teams / final 8 teams etc.
   - Timeline of an NBA season
     - <img src="../master/data/image/2022-09-11-14-37-33.png">
 
 - Analytical problem
-  - To predict the probability of a team winning the championship given its performance in the regular season before All-Star Game
+  - To predict the probability of a team winning the other team in a playoff game given their respective performance in the regular season before All-Star Game
   - This is a supervised classification problem which can be trained offline
 
 # How will my solution be used
@@ -140,6 +157,8 @@
   - despite adjustments to tackle class-imbalance
   - sometimes precision collapsed to 0 even when threshold is increasing
   - <img src="../master/data/image/2022-09-18-16-09-05.png">
+  - Even relaxing the target variable from predicting champion to predicting top 4 in playoffs didn't help
+    - <img src="../master/data/image/2022-09-28-17-24-03.png">
 - Computational complexity of different models can become an issue if dataset gets larger over time
 
 # Interesting directions to dig deeper
