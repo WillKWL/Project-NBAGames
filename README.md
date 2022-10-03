@@ -19,14 +19,14 @@
     - <img src="../master/data/image/2022-09-28-17-24-03.png">
 
 
-# Modified business and analytical problem: can you tell which team will win an NBA playoff game before All-Star Game starts?
+# Modified business and analytical problem: can you tell which team will win <span style="color:red">an NBA playoff game </span> before All-Star Game starts?
 
 - Business question
   - By reframing the business question to predicting the outcome of a game instead of NBA champion, we now have more data to use
   - We now have 5000 rows to work with
     - There are roughly 100 playoff games per season
     - 1 row for Win and 1 row for Loss for each game, thus bypassing the need to deal with class imbalance
-  - If we can accurately predict the outcome of a game, we can use the result to predict the NBA champion / final 4 teams / final 8 teams etc.
+  - Assumption: if we can accurately predict the outcome of a game, we can use the result to predict the NBA champion / final 4 teams / final 8 teams etc.
   - Timeline of an NBA season
     - <img src="../master/data/image/2022-09-11-14-37-33.png">
 
@@ -60,8 +60,10 @@
 - NBA team statistics in regular season and playoffs from [NBA.com/stats](https://www.nba.com/stats/teams/traditional/?sort=W_PCT&dir=-1&Season=2021-22&SeasonType=Regular%20Season&SeasonSegment=Pre%20All-Star) using [nba_api from github](https://github.com/swar/nba_api/blob/master/docs/nba_api/stats/endpoints/leaguedashteamstats.md)
   - <img src="../master/data/image/2022-09-12-14-53-32.png">
   - Unit for each row = an NBA playoff game
-  - X = a team's and its opponent's performance in regular season before All-Star Game <img src="../master/data/image/2022-10-02-18-13-07.png">
-  - Y = 0 or 1 with 1 for winning that playoff game
+  - X = a team's and its opponent's performance in regular season before All-Star Game
+  - Y (OUTCOME) = 0 or 1 with 1 for winning that playoff game
+  - <img src="../master/data/image/2022-10-02-18-13-07.png">
+  
 ## Type of statistics available
 - Base / Advanced / Misc / Four Factors / Scoring / Opponent / Usage / Defense
 - Each measures a different aspect of a team's or its opponent's performance in the regular season
@@ -72,25 +74,23 @@
 - Some seasons have abnormally high and low number of games played before All-Star Game, e.g. 1997-98 (82 games) and 1998-99 (4 games) due to NBA lockout
 - Removed those abnormal seasons such that all the rows represent a good estimate of mid-season cutoff
 
-# Workflow (more details in /source folder)
+# Workflow (more details in [/source](https://github.com/WillKWL/Project-NBAGames/tree/master/source) folder)
 1) Train-Test split
 2) Exploratory data analysis
-3) Data preparation pipeline
-  - feature scaling / engineering / selection
-  - <img src="../master/data/image/2022-10-03-13-38-24.png">
+3) Data preparation pipeline (feature scaling / engineering / selection) <img src="../master/data/image/2022-10-03-13-38-24.png">
 4) Shortlist potential models
 5) Hyperparameter tuning with cross-validation
 6) Performance evaluation on test set
 
 # Findings: business objective vs data available
 - Most important question
-  > - Which team can win the championship?
+  > **Which team can win the championship?**
   - Data you need is each team's performance in a season
   - However, there are only 30 teams for 20 seasons = 600 rows
   - **Dataset is too small**
 - How to enlarge our dataset
-  > - Reframe the business problem to predicting the outcome of a game instead of NBA champion
-  - 200 playoff games for 20 seasons = 4000 rows
+  > **Reframe the business problem** to predicting the outcome of a game instead of NBA champion
+  - 5000 rows instead
   - However, this changes our objective from predicting which team can win **the NBA champion** to which team can win **a playoff game**
   - As we see, a good model for predicting playoff games [might not translate well](https://github.com/WillKWL/Project-NBAGames/tree/master/source#how-well-does-the-prediction-of-playoff-game-outcome-translate-to-predicting-the-ranking-in-playoffs-eg-winning-the-champion) to predicting the NBA champion
 - Other findings
