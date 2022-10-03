@@ -1,3 +1,4 @@
+> (Updated version of [Project-NBASeason](https://github.com/WillKWL/Project-NBASeason))
 # Binary classification - Can you predict the outcome of an NBA playoff game 4 months in advance?
 - Achieved 56% gain in first 4 deciles after identifying 38 out of 194 features to predict probability of winning an NBA playoff game
 - Designed a reusable ML pipeline to prepare dataset, finetune model on train set and evaluate performance on test set
