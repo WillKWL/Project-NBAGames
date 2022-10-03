@@ -1,7 +1,7 @@
-# Step 1: Load data 
-
-Notebooks:
+Notebooks to run:
 - 1_playoff_games_load_data.ipynb
+
+# Step 1: Load data 
 
 1. Grab player and team stats using [Github NBA API](https://github.com/swar/nba_api) from NBA.com/stats <img src="../data/image/2022-10-02-18-13-07.png">
 
