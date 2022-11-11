@@ -103,3 +103,5 @@
   - teams may be interested in improving their rank and increasing their chance of winning a championship over time when they don't see it possible to win it right now
 - Possible solution
   - e.g. ordinal regression using neural network with multi-label binary classifier output layer + rank conformity check using modified cost function mentioned by [Sebastian Raschka](https://open.spotify.com/episode/772tgKNhb2WCdcccN8IHhm?si=Kn3TcF_zRCS0gBUjJBskNA&utm_source=copy-link&t=970)
+- use your own request call instead of nbaapi (doesn't remove rank and more control)
+ - reference: private-project/0-baseketball.ipynb
