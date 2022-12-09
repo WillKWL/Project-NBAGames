@@ -74,7 +74,7 @@ Lift is the best in 1st decile and by focusing on first 4 deciles, we can captur
 - PF: personal fouls committed
 - OPP_AST: opponent assists
 - OPP_FG_PCT: opponent field goal percentage
-<img src="../data/image/2022-10-02-18-32-13.png">
+<img src="../data/image/2022-12-09-14-23-54.png">
 
 ### Coefficients of best model
 - To interpret with caution (signs could change with different hyperparameters)
