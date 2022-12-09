@@ -30,11 +30,10 @@ Notebooks to run:
    - <img src="../data/image/2022-10-02-18-19-33.png">
 2. Hyperparameter tuning with RandomizedSearchCV
    - Tune top 5 models
-   - Specify distribution of each hyperparameter (discrete uniform / continuous uniform / loguniform) <img src="../data/image/2022-09-18-16-57-50.png">
+   - Specify distribution of each hyperparameter (discrete uniform / continuous uniform / loguniform) <img src="../data/image/2022-12-09-14-05-44.png">
    - Use 10-fold cross validation and 100 iterations to search for best hyperparameters optimizing for Average Precision <img src="../data/image/2022-10-02-18-20-35.png">
 3. Comparing performance on train set
-   - Average precision <img src="../data/image/2022-10-02-18-21-12.png">
-   - AUROC (similar) <img src="../data/image/2022-10-02-18-21-28.png">
+   - Average precision with similar AUROC results <img src="../data/image/2022-12-09-14-06-20.png">
    - Precision-Recall curve <img src="../data/image/2022-10-02-18-21-41.png">
 
 # Step 3: Evaluation on test set
@@ -42,12 +41,11 @@ Best model = SGD(log loss) with elastic net regularization
 <img src="../data/image/2022-10-02-18-26-18.png">
 ## Predicted Probabilities
 The model was able to generalize across a range of predicted probabilities
-<img src="../data/image/2022-10-02-18-27-05.png">
+<img src="../data/image/2022-12-09-14-00-28.png">
 
 ## Precision-Recall Curve
 PR curve is much smoother now because of the larger train and test set with each row representing a playoff game instead of a team
-<img src="../data/image/2022-10-02-18-28-25.png">
-<img src="../data/image/2022-10-02-18-28-38.png">
+<img src="../data/image/2022-12-09-13-50-20.png">
 ## Average Precision (Area under PR Curve)
 AP is better on test set vs 10-fold CV on train set but still within 1 SD of the CV results
 <img src="../data/image/2022-10-02-18-29-58.png">
@@ -59,8 +57,15 @@ Performance in AUROC is similar to AP
 ## Lift and gain chart
 Lift is the best in 1st decile and by focusing on first 4 deciles, we can capture 56% of the champions
 <img src="../data/image/2022-10-02-18-30-21.png">
-## Coefficients or Feature importance
 
+## Model inference
+### Permutation importance
+- While coefficients of our model are derived from training set, permutation importance is derived from test set
+- This allows us to pinpoint the feature(s) that are most important in out-of-sample predictions
+- On the left bar chart, a list of most important features sorted by the magnitude of coefficients in predicting the probability of winning a playoff game include home court advantage with various offensive and defensive stats
+- On the right bar chart, permutation importance suggests for out-of-sample prediction, only the home court advantage matters
+<img src="../data/image/2022-12-09-13-48-16.png">
+<img src="../data/image/2022-12-09-13-43-39.png">
 ### Common features picked up by top models
 - Instead of just looking at our best model, we can look at the top 5 models and see what features are common across them
 - HOME: home court advantage
@@ -99,10 +104,11 @@ Lift is the best in 1st decile and by focusing on first 4 deciles, we can captur
   - When threshold is higher, we only predict a few games to be a sure win. Therefore we cannot differentiate between teams, leading to a lower precision in predicting the ranking
 
 ## Teams with greatest regret of not winning the playoff game
-- By sorting teams by predicted probability of winning a playoff game, we can tell which playoff game should have been won 
+- Caution of reading probability without careful calibration on test set
+- By sorting teams by predicted probabilities of winning a playoff game as confidence scores, we can tell which playoff game should have been won 
 - <img src="../data/image/2022-10-02-18-48-35.png">
 - Honorable mentions include 
-  - 2015-16 Warriors vs Cavaliers
+  - 2015-16 Warriors vs Cavaliers finals
   - 72-win season for Warriors
   - Game 5 when Warriors were up 3-1
   - Game 7 when Warriors were at home and the series is tied 3-3
