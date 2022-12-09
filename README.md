@@ -6,7 +6,6 @@
   - <img src="../master/data/image/2022-12-09-13-43-39.png">
 - Permutation importance allows us to identify the most important features based on performance on held-out test data set among all the common features to predict playoff game outcome shared across top models
 - <img src="../master/data/image/2022-12-09-13-48-16.png">
-- 
 
 
 # Business and analytical problem: can you tell which team will win <span style="color:red">an NBA playoff game </span> before All-Star Game starts?
